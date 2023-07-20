@@ -1,0 +1,345 @@
+<section class="container bg-white">
+    <div class="row">
+            <div class="row mt-3">
+                <div class="col-lg-10">
+                    <div class="input-group">
+                        <input class="form-control" type="search" value="Customer" id="customer-search-input" placeholder="Search Customer"
+                        [(ngModel)]="searchCustomer" (change)="findCustomer(searchCustomer)" >
+                        <span class="input-group-append">
+                            <button class="btn btn-outline-secondary bg-white border-start-0 border-bottom-0 border-right-0 border ms-n5"
+                                type="button">
+                                <i class="fa fa-search" *ngIf="searchCustomer == ''"></i>
+                                <i class="fa fa-close" (click)="clearSearch()" *ngIf="searchCustomer !== ''"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-2 mt-2">
+                    <i class="fa fa-plus-square-o fa-lg" data-bs-toggle="modal" data-bs-target="#addCustomerModal"
+                    (click)="openCustomerModal()"></i>
+                </div>
+            </div>
+            <div class="row">
+                <div class="offset-lg-8 col-lg-4 mt-2">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Sort By
+                        </a>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="#">Date</a></li>
+                          <li><a class="dropdown-item" href="#">Name</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <hr>
+    <div class="row pt-2 pb-2 custom-row" *ngFor="let data of customers | paginate: { itemsPerPage: 6, currentPage: page };">
+        <div class="col-lg-2 mr-3">
+            <img [src]="data.image" alt="profile" class="profile">
+        </div>
+        <div class="col-lg-9 mt-1" (click)="viewCustomerDetails(data)">
+            <h6 class="card-title">{{data.firstName}} {{data.lastName}}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">{{data.email}}</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 d-flex justify-content-end pagination-custom pt-2">
+            <pagination-controls (pageChange)="page = $event"></pagination-controls>
+        </div>
+    </div>
+
+</section>
+
+
+<!-- add Customer Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">{{addCustomerTitle}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeaddCustomerBtn></button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-body scrollable-modal">
+                <div class="tab-slider--nav">
+                    <ul class="tab-slider--tabs">
+                      <li class="tab-slider--trigger" [class.active]="viewMode == 'tab1'" rel="tab1" (click)="viewMode ='tab1';addCustomerTab()">Login Details</li>
+                      <li class="tab-slider--trigger" [class.active]="viewMode == 'tab2'" rel="tab2" (click)="viewMode ='tab2';addCustomerAddressTab()">Profile Details</li>
+                
+                    </ul>
+                </div>
+                <div class="tab-slider--container" [ngSwitch]="viewMode">
+                    <div id="tab1" class="tab-slider--body" *ngSwitchCase="'tab1'">
+                        <form [formGroup]="addCustomerForm" (ngSubmit)="submitNewCustomer()">
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">First Name<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control" formControlName="firstName" name="firstName"  
+                                    [ngClass]="{'is-invalid':(submittedA && f['firstName'].errors) ||(f['firstName'].errors && f['firstName'].touched) }">
+                                        <div *ngIf="(submittedA && f['firstName'].errors) ||(f['firstName'].errors && f['firstName'].touched)" class="invalid-feedback">
+                                            <div *ngIf="f['firstName'].errors['required']">
+                                                First Name is required
+                                            </div>
+                                            <div *ngIf="f['firstName'].errors['pattern']">
+                                                Only Characters are allowed
+                                              </div>
+                                     </div>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">Last Name<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control" formControlName="lastName" name="lastName"  
+                                    [ngClass]="{'is-invalid':(submittedA && f['lastName'].errors) ||(f['lastName'].errors && f['lastName'].touched) }">
+                                        <div *ngIf="(submittedA && f['lastName'].errors) ||(f['lastName'].errors && f['lastName'].touched)" class="invalid-feedback">
+                                            <div *ngIf="f['lastName'].errors['required']">
+                                               Last Name is required
+                                            </div>
+                                            <div *ngIf="f['lastName'].errors['pattern']">
+                                                Only Characters are allowed
+                                              </div>
+                                     </div>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">User Name<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control" formControlName="userName" name="userName"  (change)="verifyUserName($event)"
+                                    [ngClass]="{'is-invalid':(submittedA && f['userName'].errors) ||(f['userName'].errors && f['userName'].touched) }">
+                                        <div *ngIf="(submittedA && f['userName'].errors) ||(f['userName'].errors && f['userName'].touched)" class="invalid-feedback">
+                                            <div *ngIf="f['userName'].errors['required']">
+                                               User Name is required
+                                            </div>
+                                            <div *ngIf="f['userName'].errors['pattern']">
+                                                Only Characters are allowed
+                                              </div>
+                                        </div>
+                                        <div *ngIf="isUserNameExists" class="text-red">Customer already exists</div>
+
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">Email<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control" formControlName="email" name="email"  
+                                    [ngClass]="{'is-invalid':(submittedA && f['email'].errors) ||(f['email'].errors && f['email'].touched) }">
+                                        <div *ngIf="(submittedA && f['email'].errors) ||(f['email'].errors && f['email'].touched)" class="invalid-feedback">
+                                            <div *ngIf="f['email'].errors['required']">
+                                                Email is required
+                                            </div>
+                                            <div *ngIf="f['email'].errors['pattern']">
+                                                Email address is invalid
+                                              </div>
+                                     </div>
+                                </div>                               
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">Contact<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control" formControlName="phone" name="phone"  
+                                    [ngClass]="{'is-invalid':(submittedA && f['phone'].errors) ||(f['phone'].errors && f['phone'].touched) }">
+                                        <div *ngIf="(submittedA && f['phone'].errors) ||(f['phone'].errors && f['phone'].touched)" class="invalid-feedback">
+                                            <div *ngIf="f['phone'].errors['required']">
+                                                Contact is required
+                                            </div>
+                                            <div *ngIf="f['phone'].errors['pattern']">
+                                                Please, Enter 10 digit Contact Number
+                                            </div>
+                                     </div>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label mt-1">Gender<span class="text-red">*</span></label><br/>
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label p-0 mt-1" for="active">
+                                    <input class="form-check-input" type="radio" formControlName="gender" name="gender" id="status" value="male"
+                                    [ngClass]="{'is-invalid':(submittedA && f['gender'].errors) ||(f['gender'].errors && f['gender'].touched) }">Male
+                                    </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label p-0 mt-1" for="inactive">
+                                    <input class="form-check-input" type="radio" formControlName="gender" name="gender" id="status" value="female"
+                                    [ngClass]="{'is-invalid':(submittedA && f['gender'].errors) ||(f['gender'].errors && f['gender'].touched) }">Female
+                                    </label>
+                                    </div>
+                                    <div *ngIf="(submittedA && f['gender'].errors) ||(f['gender'].errors && f['gender'].touched)" class="invalid-feedback">
+                                        <div *ngIf="f['gender'].errors['required']">Status is required</div> 
+                                    </div>
+                                </div>
+                               
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">Date of Birth<span class="text-red">*</span></label>
+                                    <input type="date" class="form-control" formControlName="dob" name="dob"  
+                                    [ngClass]="{'is-invalid':(submittedA && f['dob'].errors) ||(f['dob'].errors && f['dob'].touched) }">
+                                        <div *ngIf="(submittedA && f['dob'].errors) ||(f['dob'].errors && f['dob'].touched)" class="invalid-feedback">
+                                            <div *ngIf="f['dob'].errors['required']">
+                                                Date of Birth is required
+                                            </div>
+                                          
+                                     </div>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">Password<span class="text-red">*</span></label>
+                                    <input type="password" class="form-control" formControlName="password" name="password"  
+                                    [ngClass]="{'is-invalid':(submittedA && f['password'].errors) ||(f['password'].errors && f['password'].touched) }">
+                                    <div *ngIf="(submittedA && f['password'].errors) ||(f['password'].errors && f['password'].touched)" class="invalid-feedback">
+                                        <div *ngIf="f['password'].errors['required']">
+                                                Password is required
+                                        </div>
+                                     </div>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label">Confirm Password<span class="text-red">*</span></label>
+                                    <input type="text" class="form-control" formControlName="confirmPassword" name="confirmPassword"  
+                                    [ngClass]="{'is-invalid':(submittedA && f['confirmPassword'].errors) ||(f['confirmPassword'].errors && f['confirmPassword'].touched) }">
+                                    <div *ngIf="(submittedA && f['confirmPassword'].errors) ||(f['confirmPassword'].errors && f['confirmPassword'].touched)" class="invalid-feedback">
+                                        <div *ngIf="f['confirmPassword'].errors['required']">
+                                            Confirm Password is required
+                                        </div>
+                                     </div>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="form-control-label mt-1">Status</label><br/>
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label p-0 m-1" for="active">
+                                    <input class="form-check-input" type="radio" formControlName="isActive" name="isActive" id="status" value="true"
+                                    [ngClass]="{'is-invalid':(submittedA && f['isActive'].errors) ||(f['isActive'].errors && f['isActive'].touched) }">Active
+                                    </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                    <label class="form-check-label p-0 mt-1" for="inactive">
+                                    <input class="form-check-input" type="radio" formControlName="isActive" name="isActive" id="status" value="false"
+                                    [ngClass]="{'is-invalid':(submittedA && f['isActive'].errors) ||(f['isActive'].errors && f['isActive'].touched) }">Inactive
+                                    </label>
+                                    </div>
+                                    <div *ngIf="(submittedA && f['isActive'].errors) ||(f['isActive'].errors && f['isActive'].touched)" class="invalid-feedback">
+                                        <div *ngIf="f['isActive'].errors['required']">Status is required</div> 
+                                    </div>
+                                </div>
+                            </div>
+
+                           
+                                <div class="row mt-3">
+                                    <div class="col-lg-6">
+                                        <button type="button" class="btn btn-info w-100 br-0" data-bs-dismiss="modal" aria-label="Close">
+                                          <i class="fa fa-close"></i> Cancel</button>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <button type="submit" class="btn btn-primary w-100 br-0">
+                                            <i class="fa fa-check"></i> Proceed</button>
+                                    </div>
+                                    
+                                </div>
+                           
+                        </form>
+                    </div>
+                    <div id="tab2" class="tab-slider--body" *ngSwitchCase="'tab2'">
+                        <form [formGroup]="addCustomerAddressForm" (ngSubmit)="submitNewCustomerAddress()">
+                        <div class="row">   
+                            <div class="form-row mb-3 d-flex">
+                               <div class="col-lg-6">
+                                <label class="form-control-label">Profile Pic</label>
+                               </div>
+                                
+                                <div class="input-group col-lg-6">     
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="customFile" name="image" formControlName="image"
+                                        (change)="uploadCustomerImage($event)"
+                                        [ngClass]="{'is-invalid':(submittedB && g['image'].errors) ||(g['image'].errors && g['image'].touched) }">
+                                         
+                                    </div>
+                                    <div *ngIf="(submittedB && g['image'].errors) ||(g['image'].errors && g['image'].touched)" class="invalid-feedback">
+                                        <div *ngIf="g['image'].errors['required']">
+                                            Image is required
+                                        </div>
+                                    </div>
+                                   
+                                </div>
+    
+                            </div>                             
+                            <div class="form-group col-lg-12">
+                                <label class="form-control-label">Address <span class="text-red">*</span></label>
+                                <textarea formControlName="address" name="address"  class="form-control"  id="address" rows="3"
+                                [ngClass]="{'is-invalid':(submittedB && g['address'].errors) ||(g['address'].errors && g['address'].touched) }"
+                                ></textarea>
+                                <div *ngIf="(submittedB && g['address'].errors) ||(g['address'].errors && g['address'].touched)" class="invalid-feedback">
+                                        <div *ngIf="g['address'].errors['required']">
+                                            Address is required
+                                        </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group col-lg-6">
+                                <label class="form-control-label">Landmark<span class="text-red">*</span></label>
+                                <input type="text" class="form-control" formControlName="landMark" name="landMark"  
+                                [ngClass]="{'is-invalid':(submittedB && g['landMark'].errors) ||(g['landMark'].errors && g['landMark'].touched) }">
+                                <div *ngIf="(submittedB && g['landMark'].errors) ||(g['landMark'].errors && g['landMark'].touched)" class="invalid-feedback">
+                                    <div *ngIf="g['landMark'].errors['required']">
+                                            Landmark is required
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="form-group col-lg-6">
+                                <label class="form-control-label">City <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" formControlName="city" name="city"  
+                                [ngClass]="{'is-invalid':(submittedB && g['city'].errors) ||(g['city'].errors && g['city'].touched) }">
+                                <div *ngIf="(submittedB && g['city'].errors) ||(g['city'].errors && g['city'].touched)" class="invalid-feedback">
+                                    <div *ngIf="g['city'].errors['required']">
+                                            City is required
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="form-group col-lg-6">
+                                <label class="form-control-label">State <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" formControlName="state" name="state"  
+                                [ngClass]="{'is-invalid':(submittedB && g['state'].errors) ||(g['state'].errors && g['state'].touched) }">
+                                <div *ngIf="(submittedB && g['state'].errors) ||(g['state'].errors && g['state'].touched)" class="invalid-feedback">
+                                    <div *ngIf="g['state'].errors['required']">
+                                            State is required
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="form-group col-lg-6">
+                                <label class="form-control-label">Country <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" formControlName="country" name="country"  
+                                [ngClass]="{'is-invalid':(submittedB && g['country'].errors) ||(g['country'].errors && g['country'].touched) }">
+                                <div *ngIf="(submittedB && g['country'].errors) ||(g['country'].errors && g['country'].touched)" class="invalid-feedback">
+                                    <div *ngIf="g['country'].errors['required']">
+                                            Country is required
+                                    </div>
+                                 </div>
+                            </div>
+
+                            <div class="form-group col-lg-6">
+                                <label class="form-control-label">Zipcode <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" formControlName="zipCode" name="zipCode"  
+                                [ngClass]="{'is-invalid':(submittedB && g['zipCode'].errors) ||(g['zipCode'].errors && g['zipCode'].touched) }">
+                                <div *ngIf="(submittedB && g['zipCode'].errors) ||(g['zipCode'].errors && g['zipCode'].touched)" class="invalid-feedback">
+                                    <div *ngIf="g['zipCode'].errors['required']">
+                                            Zipcode is required
+                                    </div>
+                                 </div>
+                            </div>
+
+                           
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-lg-6">
+                                <button type="button" class="btn btn-info w-100 br-0" data-bs-dismiss="modal" aria-label="Close">
+                                  <i class="fa fa-close"></i> Cancel</button>
+                            </div>
+                            <div class="col-lg-6">
+                                <button type="submit" class="btn btn-primary w-100 br-0">
+                                    <i class="fa fa-save"></i> Save</button>
+                            </div>
+                            
+                        </div>
+                    </form>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+        
+      </div>
+    </div>
+</div>

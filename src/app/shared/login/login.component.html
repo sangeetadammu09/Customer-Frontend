@@ -1,0 +1,90 @@
+<div class="container-fluid">
+    <div class="row no-gutter">
+        <!-- The image half -->
+        <div class="col-md-6 d-none d-md-flex bg-image"></div>
+
+
+        <!-- The content half -->
+        <div class="col-md-6 bg-light">
+            <div class="login d-flex align-items-center py-5">
+
+                <!-- Demo content-->
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-10 col-xl-7 mx-auto">
+                            <h3>Customer Application</h3>
+                            <p class="text-muted mb-4">Login into your account</p>
+                            <form [formGroup]="loginForm" (ngSubmit)="login()">
+                                <div class="form-group mb-3">
+                                    <label class="form-control-label">Username</label>
+                                    <input type="text" class="form-control" formControlName="username" name="username"  autocomplete="off" 
+                                    [ngClass]="{'is-invalid':(submitted && f['username'].errors) ||(f['username'].errors && f['username'].touched) }">
+                                        <div *ngIf="(submitted && f['username'].errors) ||(f['username'].errors && f['username'].touched)" class="invalid-feedback">
+                                            <div *ngIf="f['username'].errors['required']">
+                                                Username is required
+                                            </div>
+                                        </div>
+                                    </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-control-label">Password</label>
+                                    
+                                    <input type="password" class="form-control" formControlName="password" name="password"  #mypassword
+                                    [ngClass]="{'is-invalid':(submitted && f['password'].errors) ||(f['password'].errors && f['password'].touched) }">
+                                    <div *ngIf="(submitted && f['password'].errors) ||(f['password'].errors && f['password'].touched)" class="invalid-feedback">
+                                        <div *ngIf="f['password'].errors['required']">
+                                            Password is required
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-3 row">
+                                 <div class="col-lg-7">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="customControlInline"  (change)="showpassword()" >
+                                            <label class="custom-control-label" for="customControlInline">Show Password</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-5">
+                                        <span class="form-label-description">
+                                            <a data-bs-toggle="modal" data-bs-target="#resetModal" class="custom-cursor">Forgot password</a>
+                                          </span>
+                                    </div>
+                                </div>
+        
+                                <div class="col-lg-12 loginbttm mb-5">
+                                        <button type="submit" class="btn btn-primary w-100">{{loginText}}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- End -->
+
+            </div>
+        </div><!-- End -->
+
+    </div>
+</div>
+
+<!-- delete Customer Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Reset Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closedeleteCustomerBtn></button>
+        </div>
+        <div class="modal-body scrollable-modal">   
+         <div class="form-group mb-3">
+                <label class="form-control-label">Email</label>
+                <input type="text" class="form-control"  autocomplete="off" [(ngModel)]="resetEmail" #resetEmailRef>
+                <div *ngIf="isResetValidation" class="mandatory-text">Email is required</div>
+                <div *ngIf="emailResetText">{{emailResetText}}</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="resetCustomerPassword()">Reset</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>

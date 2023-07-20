@@ -1,0 +1,28 @@
+.customer-card{
+    border: #643d01bf;
+    border-width: 20px;
+}
+
+.profile{
+  width: 100%;
+  height: auto;
+}
+.bg-card{
+  background-color: wheat;
+  border: none;
+}
+
+.custom-card{
+  padding: 7px 9px;
+}
+
+.table tbody tr:nth-child(odd) td {
+  background-color: white;
+  border: none;
+}
+
+.table tbody tr:nth-child(even) td {
+  background-color: wheat;
+  border: none;
+}
+

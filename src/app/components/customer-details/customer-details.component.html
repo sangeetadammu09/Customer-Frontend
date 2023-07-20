@@ -1,0 +1,392 @@
+<section class="container bg-white custom-container mt-1">
+    <div class="m-auto pt-4 bg-white text-black card customer-card"> 
+        <div class="row mb-3">
+          <div class="col-lg-2 ms-5 col-md-3 col-sm-3">
+            <img [src]="customerData.image" alt="profile" class="profile">
+          </div>
+          <div class="col-lg-8 col-md-5 col-sm-6">
+          <h4 class="text-bold text-name">{{customerData.firstName}} {{customerData.lastName}}</h4>
+          <div class="row mt-3 mb-5">
+          <div class="col-lg-3">
+            <p class="card-text"><i class="fa fa-user"></i> {{customerData.userName}}</p> 
+          </div>
+          <div class="col-lg-4">
+            <p class="card-text"><i class="fa fa-envelope"></i>{{customerData.email}}</p>   
+          </div>
+          <div class="col-lg-4">
+            <p class="card-text"><i class="fa fa-phone"></i> {{customerData.phone}}</p> 
+          </div>
+          </div>
+          <div class="row">
+          <button type="button" class="btn btn-outline-secondary col-lg-2 mr-3"
+          (click)="openUpdateModal(customerData)" data-bs-toggle="modal" data-bs-target="#updateCustomerModal">
+            <i class="fa fa-pencil" ></i> Edit</button>
+          <button type="button" class="btn btn-outline-danger col-lg-3" 
+          (click)="openDeleteModal(customerData)" data-bs-toggle="modal" data-bs-target="#deleteCustomerModal">
+            <i class="fa fa-trash"></i> Delete Customer</button>
+        </div>
+          </div>     
+        </div>   
+  
+    </div>
+    
+    <hr>
+    <div class="row g-2">
+      <h4>Personal Details</h4>
+      <div class="col-lg-3 col-md-5">
+      <div class="card bg-card">
+        <div class="card-body custom-card custom-card">
+          <h6 class="card-subtitle mb-2 text-muted">First Name</h6>
+          <h5 class="card-title">{{customerData.firstName}}</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-5">
+      <div class="card bg-card">
+        <div class="card-body custom-card">
+          <h6 class="card-subtitle mb-2 text-muted"> Last Name</h6>
+          <h5 class="card-title">{{customerData.lastName}}</h5>
+        </div>
+      </div>
+    </div>
+      <div class="col-lg-3 col-md-5">
+      <div class="card bg-card">
+        <div class="card-body custom-card">
+          <h6 class="card-subtitle mb-2 text-muted">Gender</h6>
+          <h5 class="card-title">{{customerData.gender}}</h5>
+         
+        </div>
+      </div>
+    </div>
+      <div class="col-lg-3 col-md-5">
+      <div class="card bg-card">
+        <div class="card-body custom-card">
+          <h6 class="card-subtitle mb-2 text-muted">Date of Birth</h6>
+          <h5 class="card-title">{{customerData.dob | date:'dd-MM-yyyy'}}</h5>
+        </div>
+      </div>
+    </div>
+    </div>
+
+   <div class="row mt-3 mb-3">
+    <h5>Address</h5>
+    <div class="col-lg-6">
+      <table class="table ">
+        <tbody>
+          <tr>
+            <td>AddressLine 1</td>
+            <td>{{customerData.address?.address}}</td>
+          </tr>
+          <tr>
+            <td>LandMark</td>
+            <td>{{customerData.address?.landmark}}</td>
+          </tr>
+          <tr>
+            <td>City</td>
+            <td>{{customerData.address?.city}}</td>
+          </tr>
+          <tr>
+            <td>State</td>
+            <td>{{customerData.address?.state}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+     
+
+    </div>
+</section>
+
+
+<!-- update Customer Modal -->
+<div class="modal fade" id="updateCustomerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{addCustomerTitle}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closeaddCustomerBtn></button>
+      </div>
+      <div class="modal-body">
+          <div class="modal-body scrollable-modal">
+              <div class="tab-slider--nav">
+                  <ul class="tab-slider--tabs">
+                    <li class="tab-slider--trigger" [class.active]="viewMode == 'tab1'" rel="tab1" (click)="viewMode ='tab1';updateCustomerTab()">Login Details</li>
+                    <li class="tab-slider--trigger" [class.active]="viewMode == 'tab2'" rel="tab2" (click)="viewMode ='tab2';updateCustomerAddressTab()">Profile Details</li>
+              
+                  </ul>
+              </div>
+              <div class="tab-slider--container" [ngSwitch]="viewMode">
+                  <div id="tab1" class="tab-slider--body" *ngSwitchCase="'tab1'">
+                      <form [formGroup]="updateCustomerForm" (ngSubmit)="updateCustomer()">
+                          <div class="row">
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label">First Name<span class="text-red">*</span></label>
+                                  <input type="text" class="form-control" formControlName="firstName" name="firstName"  
+                                  [ngClass]="{'is-invalid':(submittedA && f['firstName'].errors) ||(f['firstName'].errors && f['firstName'].touched) }">
+                                      <div *ngIf="(submittedA && f['firstName'].errors) ||(f['firstName'].errors && f['firstName'].touched)" class="invalid-feedback">
+                                          <div *ngIf="f['firstName'].errors['required']">
+                                              First Name is required
+                                          </div>
+                                          <div *ngIf="f['firstName'].errors['pattern']">
+                                              Only Characters are allowed
+                                            </div>
+                                   </div>
+                              </div>
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label">Last Name<span class="text-red">*</span></label>
+                                  <input type="text" class="form-control" formControlName="lastName" name="lastName"  
+                                  [ngClass]="{'is-invalid':(submittedA && f['lastName'].errors) ||(f['lastName'].errors && f['lastName'].touched) }">
+                                      <div *ngIf="(submittedA && f['lastName'].errors) ||(f['lastName'].errors && f['lastName'].touched)" class="invalid-feedback">
+                                          <div *ngIf="f['lastName'].errors['required']">
+                                             Last Name is required
+                                          </div>
+                                          <div *ngIf="f['lastName'].errors['pattern']">
+                                              Only Characters are allowed
+                                            </div>
+                                   </div>
+                              </div>
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label">User Name<span class="text-red">*</span></label>
+                                  <input type="text" class="form-control" formControlName="userName" name="userName"  (change)="verifyUserName($event)"
+                                  [ngClass]="{'is-invalid':(submittedA && f['userName'].errors) ||(f['userName'].errors && f['userName'].touched) }">
+                                      <div *ngIf="(submittedA && f['userName'].errors) ||(f['userName'].errors && f['userName'].touched)" class="invalid-feedback">
+                                          <div *ngIf="f['userName'].errors['required']">
+                                             User Name is required
+                                          </div>
+                                          <div *ngIf="f['userName'].errors['pattern']">
+                                              Only Characters are allowed
+                                            </div>
+                                      </div>
+                                      <div *ngIf="isUserNameExists" class="text-red">Customer already exists</div>
+
+                              </div>
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label">Email<span class="text-red">*</span></label>
+                                  <input type="text" class="form-control" formControlName="email" name="email"  
+                                  [ngClass]="{'is-invalid':(submittedA && f['email'].errors) ||(f['email'].errors && f['email'].touched) }">
+                                      <div *ngIf="(submittedA && f['email'].errors) ||(f['email'].errors && f['email'].touched)" class="invalid-feedback">
+                                          <div *ngIf="f['email'].errors['required']">
+                                              Email is required
+                                          </div>
+                                          <div *ngIf="f['email'].errors['pattern']">
+                                              Email address is invalid
+                                            </div>
+                                   </div>
+                              </div>                               
+                          </div>
+                          <div class="row">
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label">Contact<span class="text-red">*</span></label>
+                                  <input type="text" class="form-control" formControlName="phone" name="phone"  
+                                  [ngClass]="{'is-invalid':(submittedA && f['phone'].errors) ||(f['phone'].errors && f['phone'].touched) }">
+                                      <div *ngIf="(submittedA && f['phone'].errors) ||(f['phone'].errors && f['phone'].touched)" class="invalid-feedback">
+                                          <div *ngIf="f['phone'].errors['required']">
+                                              Contact is required
+                                          </div>
+                                          <div *ngIf="f['phone'].errors['pattern']">
+                                              Please, Enter 10 digit Contact Number
+                                          </div>
+                                   </div>
+                              </div>
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label mt-1">Gender<span class="text-red">*</span></label><br/>
+                                  <div class="form-check form-check-inline">
+                                  <label class="form-check-label p-0 mt-1" for="active">
+                                  <input class="form-check-input" type="radio" formControlName="gender" name="gender" id="status" value="male"
+                                  [ngClass]="{'is-invalid':(submittedA && f['gender'].errors) ||(f['gender'].errors && f['gender'].touched) }">Male
+                                  </label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                  <label class="form-check-label p-0 mt-1" for="inactive">
+                                  <input class="form-check-input" type="radio" formControlName="gender" name="gender" id="status" value="female"
+                                  [ngClass]="{'is-invalid':(submittedA && f['gender'].errors) ||(f['gender'].errors && f['gender'].touched) }">Female
+                                  </label>
+                                  </div>
+                                  <div *ngIf="(submittedA && f['gender'].errors) ||(f['gender'].errors && f['gender'].touched)" class="invalid-feedback">
+                                      <div *ngIf="f['gender'].errors['required']">Status is required</div> 
+                                  </div>
+                              </div>
+                             
+                          </div>
+                          <div class="row">
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label">Date of Birth<span class="text-red">*</span></label>
+                                  <input type="date" class="form-control" formControlName="dob" name="dob"  
+                                  [ngClass]="{'is-invalid':(submittedA && f['dob'].errors) ||(f['dob'].errors && f['dob'].touched) }">
+                                      <div *ngIf="(submittedA && f['dob'].errors) ||(f['dob'].errors && f['dob'].touched)" class="invalid-feedback">
+                                          <div *ngIf="f['dob'].errors['required']">
+                                              Date of Birth is required
+                                          </div>
+                                        
+                                   </div>
+                              </div>
+                              
+                             
+                              <div class="form-group col-lg-6">
+                                  <label class="form-control-label mt-1">Status</label><br/>
+                                  <div class="form-check form-check-inline">
+                                  <label class="form-check-label p-0 m-1" for="active">
+                                  <input class="form-check-input" type="radio" formControlName="isActive" name="isActive" id="status" value="true"
+                                  [ngClass]="{'is-invalid':(submittedA && f['isActive'].errors) ||(f['isActive'].errors && f['isActive'].touched) }">Active
+                                  </label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                  <label class="form-check-label p-0 mt-1" for="inactive">
+                                  <input class="form-check-input" type="radio" formControlName="isActive" name="isActive" id="status" value="false"
+                                  [ngClass]="{'is-invalid':(submittedA && f['isActive'].errors) ||(f['isActive'].errors && f['isActive'].touched) }">Inactive
+                                  </label>
+                                  </div>
+                                  <div *ngIf="(submittedA && f['isActive'].errors) ||(f['isActive'].errors && f['isActive'].touched)" class="invalid-feedback">
+                                      <div *ngIf="f['isActive'].errors['required']">Status is required</div> 
+                                  </div>
+                              </div>
+                          </div>
+
+                         
+                              <div class="row mt-3">
+                                  <div class="col-lg-6">
+                                      <button type="button" class="btn btn-info w-100 br-0" data-bs-dismiss="modal" aria-label="Close">
+                                        <i class="fa fa-close"></i> Cancel</button>
+                                  </div>
+                                  <div class="col-lg-6">
+                                      <button type="submit" class="btn btn-primary w-100 br-0">
+                                          <i class="fa fa-check"></i> Proceed</button>
+                                  </div>
+                                  
+                              </div>
+                         
+                      </form>
+                  </div>
+                  <div id="tab2" class="tab-slider--body" *ngSwitchCase="'tab2'">
+                      <form [formGroup]="updateCustomerAddressForm" (ngSubmit)="submitUpdateCustomerAddress()">
+                      <div class="row">   
+                          <div class="form-row mb-3 d-flex">
+                             <div class="col-lg-6">
+                              <label class="form-control-label">Profile Pic</label>
+                             </div>
+                              
+                              <div class="input-group col-lg-6">     
+                                  <div class="custom-file">
+                                      <input type="file" class="custom-file-input" id="customFile" name="image" formControlName="image"
+                                      (change)="uploadCustomerImage($event)"
+                                      [ngClass]="{'is-invalid':(submittedB && g['image'].errors) ||(g['image'].errors && g['image'].touched) }">
+                                       
+                                  </div>
+                                  <div *ngIf="(submittedB && g['image'].errors) ||(g['image'].errors && g['image'].touched)" class="invalid-feedback">
+                                      <div *ngIf="g['image'].errors['required']">
+                                          Image is required
+                                      </div>
+                                  </div>
+                                 
+                              </div>
+  
+                          </div>                             
+                          <div class="form-group col-lg-12">
+                              <label class="form-control-label">Address <span class="text-red">*</span></label>
+                              <textarea formControlName="address" name="address"  class="form-control"  id="address" rows="3"
+                              [ngClass]="{'is-invalid':(submittedB && g['address'].errors) ||(g['address'].errors && g['address'].touched) }"
+                              ></textarea>
+                              <div *ngIf="(submittedB && g['address'].errors) ||(g['address'].errors && g['address'].touched)" class="invalid-feedback">
+                                      <div *ngIf="g['address'].errors['required']">
+                                          Address is required
+                                      </div>
+                              </div>
+                          </div>
+                          
+                          <div class="form-group col-lg-6">
+                              <label class="form-control-label">Landmark<span class="text-red">*</span></label>
+                              <input type="text" class="form-control" formControlName="landMark" name="landMark"  
+                              [ngClass]="{'is-invalid':(submittedB && g['landMark'].errors) ||(g['landMark'].errors && g['landMark'].touched) }">
+                              <div *ngIf="(submittedB && g['landMark'].errors) ||(g['landMark'].errors && g['landMark'].touched)" class="invalid-feedback">
+                                  <div *ngIf="g['landMark'].errors['required']">
+                                          Landmark is required
+                                  </div>
+                               </div>
+                          </div>
+
+                          <div class="form-group col-lg-6">
+                              <label class="form-control-label">City <span class="text-red">*</span></label>
+                              <input type="text" class="form-control" formControlName="city" name="city"  
+                              [ngClass]="{'is-invalid':(submittedB && g['city'].errors) ||(g['city'].errors && g['city'].touched) }">
+                              <div *ngIf="(submittedB && g['city'].errors) ||(g['city'].errors && g['city'].touched)" class="invalid-feedback">
+                                  <div *ngIf="g['city'].errors['required']">
+                                          City is required
+                                  </div>
+                               </div>
+                          </div>
+
+                          <div class="form-group col-lg-6">
+                              <label class="form-control-label">State <span class="text-red">*</span></label>
+                              <input type="text" class="form-control" formControlName="state" name="state"  
+                              [ngClass]="{'is-invalid':(submittedB && g['state'].errors) ||(g['state'].errors && g['state'].touched) }">
+                              <div *ngIf="(submittedB && g['state'].errors) ||(g['state'].errors && g['state'].touched)" class="invalid-feedback">
+                                  <div *ngIf="g['state'].errors['required']">
+                                          State is required
+                                  </div>
+                               </div>
+                          </div>
+
+                          <div class="form-group col-lg-6">
+                              <label class="form-control-label">Country <span class="text-red">*</span></label>
+                              <input type="text" class="form-control" formControlName="country" name="country"  
+                              [ngClass]="{'is-invalid':(submittedB && g['country'].errors) ||(g['country'].errors && g['country'].touched) }">
+                              <div *ngIf="(submittedB && g['country'].errors) ||(g['country'].errors && g['country'].touched)" class="invalid-feedback">
+                                  <div *ngIf="g['country'].errors['required']">
+                                          Country is required
+                                  </div>
+                               </div>
+                          </div>
+
+                          <div class="form-group col-lg-6">
+                              <label class="form-control-label">Zipcode <span class="text-red">*</span></label>
+                              <input type="text" class="form-control" formControlName="zipCode" name="zipCode"  
+                              [ngClass]="{'is-invalid':(submittedB && g['zipCode'].errors) ||(g['zipCode'].errors && g['zipCode'].touched) }">
+                              <div *ngIf="(submittedB && g['zipCode'].errors) ||(g['zipCode'].errors && g['zipCode'].touched)" class="invalid-feedback">
+                                  <div *ngIf="g['zipCode'].errors['required']">
+                                          Zipcode is required
+                                  </div>
+                               </div>
+                          </div>
+
+                         
+                      </div>
+                      <div class="row mt-3">
+                          <div class="col-lg-6">
+                              <button type="button" class="btn btn-info w-100 br-0" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="fa fa-close"></i> Cancel</button>
+                          </div>
+                          <div class="col-lg-6">
+                              <button type="submit" class="btn btn-primary w-100 br-0">
+                                  <i class="fa fa-save"></i> Save</button>
+                          </div>
+                          
+                      </div>
+                  </form>
+                  </div>
+                 
+              </div>
+          </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- delete Customer Modal -->
+<div class="modal fade" id="deleteCustomerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Customer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" #closedeleteCustomerBtn></button>
+      </div>
+      <div class="modal-body scrollable-modal">   
+          <p>Are you sure you want to delete this customer?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="deleteCustomer()">Delete</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
